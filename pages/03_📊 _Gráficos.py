@@ -14,7 +14,7 @@ st.markdown("---")
 
 df = carregar_dados()
 
-#adicionamos os filtros na sidebar
+# adicionamos os filtros na sidebar
 st.sidebar.header("Filtros")
 
 # Filtro por Marca
@@ -78,7 +78,7 @@ else:
         hover_data=['Model', 'Year'],
         title='Preço vs. Quilometragem por Marca'
     )
-    col_graf1.plotly_chart(fig_scatter, use_container_width=True)
+    col_graf1.plotly_chart(fig_scatter, width="stretch")
 
     #Preço Médio por Marca
     df_preco_marca = df_filtrado.groupby('Brand')['Price'].mean().sort_values(ascending=False).reset_index()
@@ -88,7 +88,7 @@ else:
         y='Price', 
         title='Preço Médio por Marca'
     )
-    col_graf2.plotly_chart(fig_bar, use_container_width=True)
+    col_graf2.plotly_chart(fig_bar, width="stretch")
 
     col_graf3, col_graf4 = st.columns(2)
 
@@ -98,7 +98,7 @@ else:
         names='Transmission', 
         title='Proporção por Tipo de Transmissão'
     )
-    col_graf3.plotly_chart(fig_pie, use_container_width=True)
+    col_graf3.plotly_chart(fig_pie, width="stretch")
 
     #Preço Médio por Ano de Fabricação
     df_preco_ano = df_filtrado.groupby('Year')['Price'].mean().reset_index()
@@ -108,4 +108,38 @@ else:
         y='Price', 
         title='Evolução do Preço Médio por Ano de Fabricação'
     )
-    col_graf4.plotly_chart(fig_line, use_container_width=True)
+    col_graf4.plotly_chart(fig_line, width="stretch")
+
+    # Variação de Preços por Condição do Carro
+    fig_box_condition = px.box(
+        df_filtrado,
+        x='Condition',
+        y='Price',
+        color='Condition',
+        title='Variação de Preços por Condição do Carro'
+    )
+
+    st.plotly_chart(fig_box_condition, width="stretch")
+
+    # Evolução do Preço Médio por Ano (Interativo)
+    df_preco_ano = df_filtrado.groupby('Year')['Price'].mean().reset_index()
+
+    fig_slider = px.line(
+        df_preco_ano,
+        x='Year',
+        y='Price',
+        title="Evolução do Preço Médio por Ano (Interativo)"
+    )
+
+    fig_slider.update_layout(
+        xaxis=dict(
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        ),
+        hovermode="x unified",
+        margin=dict(t=60, b=0, l=0, r=0)
+    )
+
+    st.plotly_chart(fig_slider, width="stretch")
